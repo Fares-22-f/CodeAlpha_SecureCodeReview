@@ -1,0 +1,101 @@
+Run started:2026-10-01 10:11:06.270375+00:00
+
+Test results:
+>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: ./vulnerable_app.py:9:0
+8	import sqlite3
+9	import subprocess
+10	
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: ./vulnerable_app.py:14:17
+13	# --- Vulnerability 1: Hardcoded credentials ---
+14	ADMIN_PASSWORD = "admin123"
+15	API_KEY = "FAKE_API_KEY_FOR_DEMO_PURPOSES_ONLY"
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: ./vulnerable_app.py:30:13
+29	    # --- Vulnerability 2: Weak hashing algorithm (MD5) ---
+30	    hashed = hashlib.md5(password.encode()).hexdigest()
+31	
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./vulnerable_app.py:34:14
+33	    # --- Vulnerability 3: SQL Injection (string formatting) ---
+34	    query = f"INSERT INTO users (username, password) VALUES ('{username}', '{hashed}')"
+35	    conn.execute(query)
+
+--------------------------------------------------
+>> Issue: [B324:hashlib] Use of weak MD5 hash for security. Consider usedforsecurity=False
+   Severity: High   Confidence: High
+   CWE: CWE-327 (https://cwe.mitre.org/data/definitions/327.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b324_hashlib.html
+   Location: ./vulnerable_app.py:41:13
+40	def login(username, password):
+41	    hashed = hashlib.md5(password.encode()).hexdigest()
+42	    conn = sqlite3.connect(DB_PATH)
+
+--------------------------------------------------
+>> Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction.
+   Severity: Medium   Confidence: Low
+   CWE: CWE-89 (https://cwe.mitre.org/data/definitions/89.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html
+   Location: ./vulnerable_app.py:44:14
+43	    # --- Vulnerability 4: SQL Injection (another instance) ---
+44	    query = f"SELECT * FROM users WHERE username='{username}' AND password='{hashed}'"
+45	    cursor = conn.execute(query)
+
+--------------------------------------------------
+>> Issue: [B605:start_process_with_a_shell] Starting a process with a shell, possible injection detected, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b605_start_process_with_a_shell.html
+   Location: ./vulnerable_app.py:54:13
+53	    command = "ping -c 1 " + host
+54	    output = os.popen(command).read()
+55	    return output
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: ./vulnerable_app.py:60:4
+59	    # --- Vulnerability 6: shell=True with unsanitized input ---
+60	    subprocess.call(f"tar -czf backup.tar.gz {filename}", shell=True)
+61	
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 52
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 2
+		Medium: 2
+		High: 4
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 2
+		Medium: 1
+		High: 5
+Files skipped (0):
